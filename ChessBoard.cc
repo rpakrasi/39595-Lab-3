@@ -6,6 +6,39 @@
 
 using Student::ChessBoard;
 
+
+ChessBoard::ChessBoard(int numRow, int numCol)
+    : numRows(numRow), numCols(numCol)
+{
+    board.resize(numRows, std::vector<ChessPiece *>(numCols, nullptr));
+}
+
+void ChessBoard::createChessPiece(Color col, Type ty, int startRow, int startColumn)
+{
+    if (board.at(startRow).at(startColumn) != nullptr)
+    {
+        delete board.at(startRow).at(startColumn);
+        board.at(startRow).at(startColumn) = nullptr;
+    }
+
+    ChessPiece *newPiece = nullptr;
+
+    switch (ty)
+    {
+    case Pawn:
+        newPiece = new PawnPiece(*this, col, startRow, startColumn);
+        break;
+    case Rook:
+        newPiece = new RookPiece(*this, col, startRow, startColumn);
+        break;
+    case Bishop:
+        newPiece = new BishopPiece(*this, col, startRow, startColumn);
+        break;
+    }
+
+    board.at(startRow).at(startColumn) = newPiece;
+}
+
 std::ostringstream ChessBoard::displayBoard()
 {
     std::ostringstream outputString;
