@@ -97,3 +97,14 @@ bool ChessBoard::isValidMove(int fromRow, int fromColumn, int toRow, int toColum
 // Stubs for Part 1 so you can link (real logic needed in Part 2/3)
 bool ChessBoard::movePiece(int, int, int, int) { return false; }
 bool ChessBoard::isPieceUnderThreat(int, int)  { return false; }
+
+namespace Student {
+    ChessBoard::~ChessBoard() {
+        for (auto &row : board) {
+            for (auto &cell : row) {
+                delete cell;
+                cell = nullptr;
+            }
+        }
+    }
+}
