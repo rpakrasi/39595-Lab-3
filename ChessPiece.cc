@@ -9,6 +9,9 @@
 
 using namespace Student;
 
+ChessPiece::ChessPiece(ChessBoard &b, Color c, int r, int c2)
+    : board(b), color(c), row(r), col(c2) {}
+
 Type ChessPiece::getType()
 {
   if (dynamic_cast<const PawnPiece*>(this))   return Pawn;
@@ -17,4 +20,11 @@ Type ChessPiece::getType()
   if (dynamic_cast<const KingPiece*>(this))   return King;
   // Fallback (should never happen in our setup)
   return Pawn;
+}
+Color ChessPiece::getColor() { return color; }
+int ChessPiece::getRow() { return row; }
+int ChessPiece::getColumn() { return col; }
+void ChessPiece::setPosition(int r, int c2) {
+  row = r;
+  col = c2;
 }
