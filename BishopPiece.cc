@@ -1,6 +1,6 @@
 #include "BishopPiece.hh"
 #include "ChessBoard.hh"
-
+using namespace Student;
 using Student::BishopPiece;
 using Student::ChessPiece;
 using Student::ChessBoard;
@@ -37,7 +37,7 @@ bool BishopPiece::canMoveToLocation(int toRow, int toColumn)
     //pieces along the diagonal path
     int r = fromRow + rowStep;
     int c = fromColumn + colStep;
-    while (r != toRow && c != toColumn)
+    while (r != toRow || c != toColumn)
     {
         if (board.getPiece(r, c) != nullptr)
         {

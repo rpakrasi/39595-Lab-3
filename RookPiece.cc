@@ -1,6 +1,6 @@
 #include "RookPiece.hh"
 #include "ChessBoard.hh"
-
+using namespace Student;
 using Student::RookPiece;
 using Student::ChessPiece;
 using Student::ChessBoard;
