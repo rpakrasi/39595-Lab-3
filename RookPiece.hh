@@ -11,6 +11,14 @@ namespace Student
 {
     class RookPiece : public ChessPiece
     {
+        public:
+            RookPiece(ChessBoard &board, Color color, int row, int column) : ChessPiece(board, color, row, column) {}
+
+            bool canMoveToLocation(int toRow, int toColumn) override;
+            const char *toString() override 
+            { 
+                return (getColor() == White) ? "♖" : "♜"; 
+            }
     };
 }
 
