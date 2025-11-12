@@ -88,19 +88,25 @@ bool ChessBoard::isValidMove(int fromRow, int fromColumn, int toRow, int toColum
     if (fromRow < 0 || fromRow >= numRows || fromColumn < 0 || fromColumn >= numCols) return false;
     if (toRow   < 0 || toRow   >= numRows || toColumn   < 0 || toColumn   >= numCols) return false;
 
-    // must have a piece at source
     ChessPiece* src = board.at(fromRow).at(fromColumn);
     if (src == nullptr) return false;
-
-    // no moving to same square
     if (fromRow == toRow && fromColumn == toColumn) return false;
 
     // final square cannot hold same-color piece
     ChessPiece* dst = board.at(toRow).at(toColumn);
     if (dst != nullptr && dst->getColor() == src->getColor()) return false;
+    if (!src->canMoveToLocation(toRow, toColumn)) return false;
+    ChessPiece* captured = board.at(toRow).at(toColumn);
+    board.at(toRow).at(toColumn) = src;
+    board.at(fromRow).at(fromColumn) = nullptr;
+    src->setPosition(toRow, toColumn);
 
-    // delegate to piece-specific logic
-    return src->canMoveToLocation(toRow, toColumn);
+    bool leavesKingInCheck = isOwnKingInCheck(src->getColor());
+    board.at(fromRow).at(fromColumn) = src;
+    board.at(toRow).at(toColumn) = captured;
+    src->setPosition(fromRow, fromColumn);
+
+    return !leavesKingInCheck;
 }
 
 bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn) 
@@ -125,18 +131,6 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
     board.at(toRow).at(toColumn) = src;
     board.at(fromRow).at(fromColumn) = nullptr;
     src->setPosition(toRow, toColumn);
-
-    // check if own King is now under attack
-    bool inCheck = isOwnKingInCheck(src->getColor());
-
-    if (inCheck)
-    {
-        // revert the simulated move
-        board.at(fromRow).at(fromColumn) = src;
-        board.at(toRow).at(toColumn) = captured;
-        src->setPosition(fromRow, fromColumn);
-        return false;
-    }
     if (captured)
         delete captured;
 
@@ -162,16 +156,21 @@ bool ChessBoard::isPieceUnderThreat(int row, int column)
             if (attacker == nullptr) continue;
             if (attacker->getColor() == targetColor) continue; // same side
 
-            // isValidMove ignores turn and checks path/obstructions/capture
-            if (isValidMove(r, c, row, column)) 
+            if (r == row && c == column) continue; // same square
+            
+            ChessPiece* dest = board.at(row).at(column);
+            if (dest != nullptr && dest->getColor() == attacker->getColor()) continue;
+            
+            // Check if attacker can move to target location (ignoring check rules)
+            if (attacker->canMoveToLocation(row, column))
             {
                 return true;
             }
+            
         }
     }
     return false; 
 }
-
 
 bool ChessBoard::isOwnKingInCheck(Color color)
 {
@@ -193,6 +192,7 @@ bool ChessBoard::isOwnKingInCheck(Color color)
     }
     if (kingRow == -1)
         return false; 
+    
     for (int r = 0; r < numRows; ++r)
     {
         for (int c = 0; c < numCols; ++c)
@@ -200,7 +200,7 @@ bool ChessBoard::isOwnKingInCheck(Color color)
             ChessPiece *attacker = board.at(r).at(c);
             if (attacker && attacker->getColor() != color)
             {
-                if (isValidMove(r, c, kingRow, kingCol))
+                if (attacker->canMoveToLocation(kingRow, kingCol))  // ✅ FIXED
                 {
                     return true;
                 }
