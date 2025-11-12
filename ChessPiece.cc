@@ -18,7 +18,6 @@ Type ChessPiece::getType()
   if (dynamic_cast<const RookPiece*>(this))   return Rook;
   if (dynamic_cast<const BishopPiece*>(this)) return Bishop;
   if (dynamic_cast<const KingPiece*>(this))   return King;
-  // Fallback (should never happen in our setup)
   return Pawn;
 }
 Color ChessPiece::getColor() { return color; }

@@ -44,16 +44,14 @@ void ChessBoard::createChessPiece(Color col, Type ty, int startRow, int startCol
 std::ostringstream ChessBoard::displayBoard()
 {
     std::ostringstream outputString;
-    
-    // top scale
+
     outputString << "  ";
     for (int i = 0; i < numCols; i++)
     {
         outputString << i << " ";
     }
     outputString << std::endl << "  ";
-    
-    // top border
+
     for (int i = 0; i < numCols; i++)
     {
         outputString << "– ";
@@ -71,7 +69,6 @@ std::ostringstream ChessBoard::displayBoard()
         outputString << "|" << std::endl;
     }
 
-    // bottom border
     outputString << "  ";
     for (int i = 0; i < numCols; i++)
     {
@@ -84,15 +81,12 @@ std::ostringstream ChessBoard::displayBoard()
 
 bool ChessBoard::isValidMove(int fromRow, int fromColumn, int toRow, int toColumn)
 {
-    // bounds
     if (fromRow < 0 || fromRow >= numRows || fromColumn < 0 || fromColumn >= numCols) return false;
     if (toRow   < 0 || toRow   >= numRows || toColumn   < 0 || toColumn   >= numCols) return false;
 
     ChessPiece* src = board.at(fromRow).at(fromColumn);
     if (src == nullptr) return false;
     if (fromRow == toRow && fromColumn == toColumn) return false;
-
-    // final square cannot hold same-color piece
     ChessPiece* dst = board.at(toRow).at(toColumn);
     if (dst != nullptr && dst->getColor() == src->getColor()) return false;
     if (!src->canMoveToLocation(toRow, toColumn)) return false;
@@ -116,15 +110,11 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
     if (toRow   < 0 || toRow   >= numRows || toColumn   < 0 || toColumn   >= numCols) return false;
 
     ChessPiece* src = board.at(fromRow).at(fromColumn);
-    if (src == nullptr) return false;// no piece at source
-
-    // enforce turn (White starts)
+    if (src == nullptr) return false;
     if ((turn == White && src->getColor() != White) || (turn == Black && src->getColor() != Black)) 
     {
         return false;
     }
-
-    // validate move
     if (!isValidMove(fromRow, fromColumn, toRow, toColumn)) return false;
 
     ChessPiece* captured = board.at(toRow).at(toColumn);
@@ -133,35 +123,28 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
     src->setPosition(toRow, toColumn);
     if (captured)
         delete captured;
-
-    // switch turn
     turn = (turn == White ? Black : White);
     return true;
 }
 
 bool ChessBoard::isPieceUnderThreat(int row, int column)  
 { 
-    // must be a piece there
     ChessPiece* target = board.at(row).at(column);
     if (target == nullptr) return false;
 
     Color targetColor = target->getColor();
 
-    // check every opponent piece to check valid capture onto (row, column)
     for (int r = 0; r < numRows; ++r) 
     {
         for (int c = 0; c < numCols; ++c) 
         {
             ChessPiece* attacker = board.at(r).at(c);
             if (attacker == nullptr) continue;
-            if (attacker->getColor() == targetColor) continue; // same side
-
-            if (r == row && c == column) continue; // same square
+            if (attacker->getColor() == targetColor) continue; 
+            if (r == row && c == column) continue; 
             
             ChessPiece* dest = board.at(row).at(column);
             if (dest != nullptr && dest->getColor() == attacker->getColor()) continue;
-            
-            // Check if attacker can move to target location (ignoring check rules)
             if (attacker->canMoveToLocation(row, column))
             {
                 return true;
@@ -200,7 +183,7 @@ bool ChessBoard::isOwnKingInCheck(Color color)
             ChessPiece *attacker = board.at(r).at(c);
             if (attacker && attacker->getColor() != color)
             {
-                if (attacker->canMoveToLocation(kingRow, kingCol))  // ✅ FIXED
+                if (attacker->canMoveToLocation(kingRow, kingCol)) 
                 {
                     return true;
                 }
