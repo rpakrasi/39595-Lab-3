@@ -3,7 +3,6 @@
 #include "RookPiece.hh"
 #include "BishopPiece.hh"
 #include "KingPiece.hh"
-
 using Student::ChessBoard;
 
 
@@ -172,10 +171,7 @@ bool ChessBoard::isPieceUnderThreat(int row, int column)
     }
     return false; 
 }
-#include "ChessBoard.hh"
-#include "KingPiece.hh"
-#include <cmath>
-using namespace Student;
+
 
 bool ChessBoard::isOwnKingInCheck(Color color)
 {
@@ -193,11 +189,10 @@ bool ChessBoard::isOwnKingInCheck(Color color)
                 break;
             }
         }
+        if (kingRow != -1) break;
     }
-
     if (kingRow == -1)
         return false; 
-
     for (int r = 0; r < numRows; ++r)
     {
         for (int c = 0; c < numCols; ++c)
@@ -205,8 +200,10 @@ bool ChessBoard::isOwnKingInCheck(Color color)
             ChessPiece *attacker = board.at(r).at(c);
             if (attacker && attacker->getColor() != color)
             {
-                if (attacker->canMoveToLocation(kingRow, kingCol))
+                if (isValidMove(r, c, kingRow, kingCol))
+                {
                     return true;
+                }
             }
         }
     }
