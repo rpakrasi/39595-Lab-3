@@ -34,7 +34,7 @@ void ChessBoard::createChessPiece(Color col, Type ty, int startRow, int startCol
     case Bishop:
         newPiece = new BishopPiece(*this, col, startRow, startColumn);
         break;
-    case King:                                       // ✅ ← ADD THIS
+    case King:                                  
         newPiece = new KingPiece(*this, col, startRow, startColumn);
         break;
     }

@@ -6,18 +6,11 @@ using namespace Student;
 
 bool KingPiece::canMoveToLocation(int toRow, int toColumn)
 {
-    if (toRow == getRow() && toColumn == getColumn())
-        return false;
+    int dRow = std::abs(toRow - row);
+    int dCol = std::abs(toColumn - col);
 
-    if (toRow < 0 || toRow >= board.getNumRows() ||
-        toColumn < 0 || toColumn >= board.getNumCols())
-        return false;
-    int dr = std::abs(toRow - getRow());
-    int dc = std::abs(toColumn - getColumn());
-    if (dr > 1 || dc > 1)
-        return false;
-    ChessPiece *target = board.getPiece(toRow, toColumn);
-    if (target && target->getColor() == getColor())
-        return false;
-    return true;
+    if (dRow <= 1 && dCol <= 1 && (dRow + dCol > 0))
+        return true;
+
+    return false;
 }
