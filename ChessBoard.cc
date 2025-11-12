@@ -101,7 +101,6 @@ bool ChessBoard::isValidMove(int fromRow, int fromColumn, int toRow, int toColum
     return src->canMoveToLocation(toRow, toColumn);
 }
 
-// Stubs for Part 1 so you can link (real logic needed in Part 2/3)
 bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn) 
 { 
     // bounds
@@ -120,23 +119,27 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
     // validate move
     if (!isValidMove(fromRow, fromColumn, toRow, toColumn)) return false;
 
-    // capture
-    if (board.at(toRow).at(toColumn) != nullptr) 
-    {
-        delete board.at(toRow).at(toColumn);
-        board.at(toRow).at(toColumn) = nullptr;
-    }
-
-    // move pointer
+    ChessPiece* captured = board.at(toRow).at(toColumn);
     board.at(toRow).at(toColumn) = src;
     board.at(fromRow).at(fromColumn) = nullptr;
-
-    // keep piece’s internal coordinates in sync
     src->setPosition(toRow, toColumn);
 
-    //flip turn
-    turn = (turn == White ? Black : White);
+    // check if own King is now under attack
+    bool inCheck = isOwnKingInCheck(src->getColor());
 
+    if (inCheck)
+    {
+        // revert the simulated move
+        board.at(fromRow).at(fromColumn) = src;
+        board.at(toRow).at(toColumn) = captured;
+        src->setPosition(fromRow, fromColumn);
+        return false;
+    }
+    if (captured)
+        delete captured;
+
+    // switch turn
+    turn = (turn == White ? Black : White);
     return true;
 }
 
@@ -166,6 +169,46 @@ bool ChessBoard::isPieceUnderThreat(int row, int column)
     }
     return false; 
 }
+#include "ChessBoard.hh"
+#include "KingPiece.hh"
+#include <cmath>
+using namespace Student;
+
+bool ChessBoard::isOwnKingInCheck(Color color)
+{
+    int kingRow = -1;
+    int kingCol = -1;
+    for (int r = 0; r < numRows; ++r)
+    {
+        for (int c = 0; c < numCols; ++c)
+        {
+            ChessPiece *p = board.at(r).at(c);
+            if (p && p->getColor() == color && p->getType() == King)
+            {
+                kingRow = r;
+                kingCol = c;
+                break;
+            }
+        }
+    }
+
+    if (kingRow == -1)
+        return false; 
+
+    for (int r = 0; r < numRows; ++r)
+    {
+        for (int c = 0; c < numCols; ++c)
+        {
+            ChessPiece *attacker = board.at(r).at(c);
+            if (attacker && attacker->getColor() != color)
+            {
+                if (attacker->canMoveToLocation(kingRow, kingCol))
+                    return true;
+            }
+        }
+    }
+    return false;
+}
 
 Student::ChessBoard::~ChessBoard() {
     for (auto &row : board) {
@@ -175,4 +218,5 @@ Student::ChessBoard::~ChessBoard() {
         }
     }
 }
+
 

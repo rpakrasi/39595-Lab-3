@@ -23,6 +23,7 @@ namespace Student
          * *(board.at(row).at(col)) returns the ChessPiece object itself.
          */
         std::vector<std::vector<ChessPiece *>> board;
+        bool isOwnKingInCheck(Color color);
 
     public:
         /**
