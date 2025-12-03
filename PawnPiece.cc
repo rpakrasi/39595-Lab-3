@@ -45,17 +45,21 @@ bool PawnPiece::canMoveToLocation(int toRow, int toColumn)
         ChessPiece* dest = board.getPiece(toRow, toColumn);
         return (dest != nullptr) && (dest->getColor() != getColor());
     }
+
     int dir = (getColor() == White ? 1 : -1);
+    if (toRow == row + dir && std::abs(toColumn - col) == 1)
+    {
 
-    // Diagonal forward move into an EMPTY square
-    if (toRow == row + dir && std::abs(toColumn - col) == 1) {
+        if (board.getPiece(toRow, toColumn) == nullptr)
+        {
 
-        // Normal capture must have a piece
-        if (board.getPiece(toRow, toColumn) != nullptr)
-            ; 
-        else {
-            // En passant condition
-            if (board.isEnPassantAvailable() &&
+            int enemyRow = toRow - dir;
+            int enemyCol = toColumn;
+            ChessPiece* behind = board.getPiece(enemyRow, enemyCol);
+            if (behind != nullptr &&
+                behind->getType() == Pawn &&
+                behind->getColor() != this->getColor() &&
+                board.isEnPassantAvailable() &&
                 toRow == board.getEnPassantTargetRow() &&
                 toColumn == board.getEnPassantTargetCol())
             {
@@ -63,7 +67,5 @@ bool PawnPiece::canMoveToLocation(int toRow, int toColumn)
             }
         }
     }
-
-
     return false;
 }
