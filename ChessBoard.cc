@@ -102,17 +102,14 @@ bool ChessBoard::isValidMove(int fromRow, int fromColumn, int toRow, int toColum
     if (pawn != nullptr) {
         int dir = (src->getColor() == White ? -1 : 1);
 
-        // Pawn attempts diagonal move onto an EMPTY square
         if (std::abs(toColumn - fromColumn) == 1 &&
             toRow == fromRow + dir &&
             this->getPiece(toRow, toColumn) == nullptr)
         {
-            // And EP is available AND target matches the EP target
             if (enPassantAvailable &&
                 toRow == enPassantTargetRow &&
                 toColumn == enPassantTargetCol)
             {
-                // EP is a valid move for simulation
                 return true;
             }
         }
@@ -190,21 +187,19 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
             enPassantTargetCol = fromColumn;
         }
     }
-    PawnPiece* movedPawn = dynamic_cast<PawnPiece*>(src);
+    PawnPiece* movedPawn = dynamic_cast<PawnPiece*>(board.at(toRow).at(toColumn));
     if (movedPawn != nullptr)
     {
-        // White promotes at row 0
-        if (src->getColor() == White && toRow == 0)
-        {
-            delete src;
-            board.at(toRow).at(toColumn) = new QueenPiece(*this, White, toRow, toColumn);
-        }
+        bool promote = false;
+        Color c = movedPawn->getColor();
 
-        // Black promotes at last row
-        if (src->getColor() == Black && toRow == numRows - 1)
+        if (c == White && toRow == 0) promote = true;
+        if (c == Black && toRow == numRows - 1) promote = true;
+
+        if (promote)
         {
-            delete src;
-            board.at(toRow).at(toColumn) = new QueenPiece(*this, Black, toRow, toColumn);
+            delete movedPawn;
+            board.at(toRow).at(toColumn) = new QueenPiece(*this, c, toRow, toColumn);
         }
     }
     turn = (turn == White ? Black : White);
