@@ -141,10 +141,8 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
                 toRow == prevTargetRow &&
                 toColumn == prevTargetCol)
             {
-
                 int capturedPawnRow = toRow - dir;
                 int capturedPawnCol = toColumn;
-
                 ChessPiece* victim = board.at(capturedPawnRow).at(capturedPawnCol);
                 if (victim != nullptr)
                 {
