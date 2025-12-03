@@ -132,7 +132,7 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
 
     if (pawn != nullptr)
     {
-        int dir = (src->getColor() == White ? 1 : -1);
+        int dir = (src->getColor() == White ? -1 : 1);
         if (toRow == fromRow + dir &&
             std::abs(toColumn - fromColumn) == 1 &&
             board.at(toRow).at(toColumn) == nullptr)

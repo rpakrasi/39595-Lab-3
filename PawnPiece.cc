@@ -46,16 +46,16 @@ bool PawnPiece::canMoveToLocation(int toRow, int toColumn)
         return (dest != nullptr) && (dest->getColor() != getColor());
     }
 
-    int dir = (getColor() == White ? 1 : -1);
-    if (toRow == row + dir && std::abs(toColumn - col) == 1)
-    {
+    int dir = (getColor() == White ? -1 : 1);  
 
+    if (toRow == fromRow + dir && std::abs(toColumn - fromCol) == 1)
+    {
         if (board.getPiece(toRow, toColumn) == nullptr)
         {
-
             int enemyRow = toRow - dir;
             int enemyCol = toColumn;
             ChessPiece* behind = board.getPiece(enemyRow, enemyCol);
+
             if (behind != nullptr &&
                 behind->getType() == Pawn &&
                 behind->getColor() != this->getColor() &&
@@ -67,5 +67,6 @@ bool PawnPiece::canMoveToLocation(int toRow, int toColumn)
             }
         }
     }
+
     return false;
 }
