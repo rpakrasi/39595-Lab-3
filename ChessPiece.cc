@@ -1,5 +1,11 @@
 #include "ChessPiece.hh"
 #include "ChessBoard.hh"
+#include "PawnPiece.hh"
+#include "RookPiece.hh"
+#include "BishopPiece.hh"
+#include "KingPiece.hh"
+#include "KnightPiece.hh"
+#include "QueenPiece.hh"
 
 // Include derived headers so RTTI can identify them
 #include "PawnPiece.hh"
@@ -18,6 +24,8 @@ Type ChessPiece::getType()
   if (dynamic_cast<const RookPiece*>(this))   return Rook;
   if (dynamic_cast<const BishopPiece*>(this)) return Bishop;
   if (dynamic_cast<const KingPiece*>(this))   return King;
+  if (dynamic_cast<const KnightPiece*>(this)) return Knight;
+  if (dynamic_cast<const QueenPiece*>(this))  return Queen;
   return Pawn;
 }
 Color ChessPiece::getColor() { return color; }
