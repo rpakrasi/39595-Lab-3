@@ -190,6 +190,23 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
             enPassantTargetCol = fromColumn;
         }
     }
+    PawnPiece* movedPawn = dynamic_cast<PawnPiece*>(src);
+    if (movedPawn != nullptr)
+    {
+        // White promotes at row 0
+        if (src->getColor() == White && toRow == 0)
+        {
+            delete src;
+            board.at(toRow).at(toColumn) = new QueenPiece(*this, White, toRow, toColumn);
+        }
+
+        // Black promotes at last row
+        if (src->getColor() == Black && toRow == numRows - 1)
+        {
+            delete src;
+            board.at(toRow).at(toColumn) = new QueenPiece(*this, Black, toRow, toColumn);
+        }
+    }
     turn = (turn == White ? Black : White);
     return true;
 }
