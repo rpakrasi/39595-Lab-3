@@ -97,6 +97,27 @@ bool ChessBoard::isValidMove(int fromRow, int fromColumn, int toRow, int toColum
     if (fromRow == toRow && fromColumn == toColumn) return false;
     ChessPiece* dst = board.at(toRow).at(toColumn);
     if (dst != nullptr && dst->getColor() == src->getColor()) return false;
+
+    PawnPiece* pawn = dynamic_cast<PawnPiece*>(src);
+    if (pawn != nullptr) {
+        int dir = (src->getColor() == White ? -1 : 1);
+
+        // Pawn attempts diagonal move onto an EMPTY square
+        if (std::abs(toColumn - fromColumn) == 1 &&
+            toRow == fromRow + dir &&
+            this->getPiece(toRow, toColumn) == nullptr)
+        {
+            // And EP is available AND target matches the EP target
+            if (enPassantAvailable &&
+                toRow == enPassantTargetRow &&
+                toColumn == enPassantTargetCol)
+            {
+                // EP is a valid move for simulation
+                return true;
+            }
+        }
+    }
+
     if (!src->canMoveToLocation(toRow, toColumn)) return false;
     ChessPiece* captured = board.at(toRow).at(toColumn);
     board.at(toRow).at(toColumn) = src;
