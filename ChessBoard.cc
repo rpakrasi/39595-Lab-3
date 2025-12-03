@@ -3,6 +3,8 @@
 #include "RookPiece.hh"
 #include "BishopPiece.hh"
 #include "KingPiece.hh"
+#include "KnightPiece.hh"
+#include "QueenPiece.hh"
 using Student::ChessBoard;
 
 
@@ -35,6 +37,12 @@ void ChessBoard::createChessPiece(Color col, Type ty, int startRow, int startCol
         break;
     case King:                                  
         newPiece = new KingPiece(*this, col, startRow, startColumn);
+        break;
+    case Knight:
+        newPiece = new KnightPiece(*this, col, startRow, startColumn);
+        break;
+    case Queen:
+        newPiece = new QueenPiece(*this, col, startRow, startColumn);
         break;
     }
 
@@ -116,13 +124,53 @@ bool ChessBoard::movePiece(int fromRow, int fromColumn, int toRow, int toColumn)
         return false;
     }
     if (!isValidMove(fromRow, fromColumn, toRow, toColumn)) return false;
+    bool prevEnPassantAvailable = enPassantAvailable;  // store
+    int prevTargetRow = enPassantTargetRow;
+    int prevTargetCol = enPassantTargetCol;
+    enPassantAvailable = false;  
+    PawnPiece* pawn = dynamic_cast<PawnPiece*>(src);
 
+    if (pawn != nullptr)
+    {
+        int dir = (src->getColor() == White ? 1 : -1);
+        if (toRow == fromRow + dir &&
+            std::abs(toColumn - fromColumn) == 1 &&
+            board.at(toRow).at(toColumn) == nullptr)
+        {
+            if (prevEnPassantAvailable &&
+                toRow == prevTargetRow &&
+                toColumn == prevTargetCol)
+            {
+
+                int capturedPawnRow = toRow - dir;
+                int capturedPawnCol = toColumn;
+
+                ChessPiece* victim = board.at(capturedPawnRow).at(capturedPawnCol);
+                if (victim != nullptr)
+                {
+                    delete victim;
+                    board.at(capturedPawnRow).at(capturedPawnCol) = nullptr;
+                }
+            }
+        }
+    }
     ChessPiece* captured = board.at(toRow).at(toColumn);
     board.at(toRow).at(toColumn) = src;
     board.at(fromRow).at(fromColumn) = nullptr;
     src->setPosition(toRow, toColumn);
     if (captured)
         delete captured;
+    pawn = dynamic_cast<PawnPiece*>(src);
+    if (pawn != nullptr)
+    {
+        int moveDist = std::abs(toRow - fromRow);
+        if (moveDist == 2)
+        {
+            enPassantAvailable = true;
+            enPassantTargetRow = (fromRow + toRow) / 2; 
+            enPassantTargetCol = fromColumn;
+        }
+    }
     turn = (turn == White ? Black : White);
     return true;
 }

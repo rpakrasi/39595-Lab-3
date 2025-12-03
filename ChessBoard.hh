@@ -24,8 +24,14 @@ namespace Student
          */
         std::vector<std::vector<ChessPiece *>> board;
         bool isOwnKingInCheck(Color color);
+        bool enPassantAvailable = false;
+        int enPassantTargetRow = -1;
+        int enPassantTargetCol = -1;
 
     public:
+        bool isEnPassantAvailable() const { return enPassantAvailable; }
+        int getEnPassantTargetRow() const { return enPassantTargetRow; }
+        int getEnPassantTargetCol() const { return enPassantTargetCol; }
         /**
          * @brief
          * Allocates memory on the heap for the board.
